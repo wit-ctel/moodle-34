@@ -1,5 +1,5 @@
 set :stage, :staging
-set :deploy_to, "/var/www/moodle"
+set :deploy_to, "/var/www/dev.moodle.wit.ie"
 set :branch, ENV["BRANCH_NAME"] || "develop"
 
 # Simple Role Syntax
