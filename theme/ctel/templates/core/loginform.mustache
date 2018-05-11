@@ -77,33 +77,38 @@
         "error": "",
         "forgotpasswordurl": "http://localhost/stable_master/login/forgot_password.php",
         "hasidentityproviders": false,
-        "hasinstructions": true,
+        "hasinstructions": false,
         "identityproviders": [],
         "instructions": "For full access to this site, you first need to create an account.",
-        "instructionsformat": "1",
+        "instructionsformat": "0",
         "loginurl": "http://localhost/stable_master/login/index.php",
         "rememberusername": true,
         "signupurl": "http://localhost/stable_master/login/signup.php",
         "cookieshelpiconformatted": "",
         "errorformatted": "",
         "logourl": false,
-        "sitename": "Beer & Chips"
+        "sitename": "moodle.wit"
     }
 }}
 
 <div class="m-y-3 hidden-sm-down"></div>
 <div class="row">
-<div class="col-xl-6 push-xl-3 m-2-md col-sm-8 push-sm-2">
+    {{! col-xl-3 offset-xl-1 push-xl-3 m-2-md col-sm-8 push-sm-2 col-lg-4 offset-lg-2 }}
+<div class="login__container">
 <div class="card">
     <div class="card-block">
         <div class="card-title text-xs-center">
-            {{#logourl}}
-                <h2><img src="{{logourl}}" title="{{sitename}}" alt="{{sitename}}"/></h2>
-            {{/logourl}}
-            {{^logourl}}
-                <h2>{{sitename}}</h2>
-            {{/logourl}}
-            <hr>
+            <div id="login__moodle-logo">            
+                {{#logourl}}
+                    <h2><img src="{{logourl}}" title="{{sitename}}" alt="{{sitename}}"/></h2>
+                {{/logourl}}
+                {{^logourl}}
+                    <h2>{{sitename}}</h2>
+                {{/logourl}}
+            </div>
+            <div id="login__avatar-container">
+              <img src="/theme/ctel/pix/login/no_profile_img.jpg">
+            </div>
         </div>
 
         {{#cansignup}}
@@ -120,7 +125,7 @@
         {{/error}}
 
         <div class="row">
-            <div class="col-md-4 push-md-1">
+            <div class="col-md-10 push-md-1">
                 <form class="m-t-1" action="{{loginurl}}" method="post" id="login">
                     <input id="anchor" type="hidden" name="anchor" value="">
                     <script>document.getElementById('anchor').value = location.hash;</script>
@@ -152,12 +157,16 @@
                     <button type="submit" class="btn btn-primary btn-block m-t-1" id="loginbtn">{{#str}}login{{/str}}</button>
                 </form>
             </div>
-
-            <div class="col-md-4 push-md-3">
+        </div>
+        <div class="row">
+            <div class="col-md-10 push-md-1">
                 <div class="forgetpass m-t-1">
                     <p><a href="{{forgotpasswordurl}}">{{#str}}forgotten{{/str}}</a></p>
                 </div>
-
+                <div id="login__support-container">
+      <a class="login__support login__student-support" href="http://ctel.wit.ie/support/students"><img src="/theme/ctel/pix/login/support-icon.png"><span class="login__support-text">Student Support</span></a>
+      <a class="login__support login__staff-support" href="http://ctel.wit.ie/support/staff/"><img src="/theme/ctel/pix/login/academic-icon.png"><span class="login__support-text">Staff Support</span></a>
+    </div>
                 <div class="m-t-1">
                     {{#str}} cookiesenabled {{/str}}
                     {{{cookieshelpiconformatted}}}
@@ -194,29 +203,6 @@
 </div>
 </div>
 </div>
-
-
-{{#hasinstructions}}
-<div class="row">
-<div class="col-xl-6 push-xl-3 m-2-md col-sm-8 push-sm-2">
-<div class="card">
-    <div class="card-block">
-        <div class="card-title">
-            <h2>{{#str}}firsttime{{/str}}</h2>
-        </div>
-        <div>
-        {{{instructions}}}
-        {{#cansignup}}
-            <form class="m-t-1" action="{{signupurl}}" method="get" id="signup">
-                <button type="submit" class="btn btn-secondary">{{#str}}startsignup{{/str}}</button>
-            </form>
-        {{/cansignup}}
-        </div>
-    </div>
-</div>
-</div>
-</div>
-{{/hasinstructions}}
 
 {{#js}}
     {{#error}}
