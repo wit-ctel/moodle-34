@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,22 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * MOODLE VERSION INFORMATION
+ * Boost.
  *
- * This file defines the current version of the core Moodle code being used.
- * This is compared against the values stored in the database to determine
- * whether upgrades should be performed (see lib/db/*.php)
- *
- * @package    core
- * @copyright  1999 onwards Martin Dougiamas (http://dougiamas.com)
+ * @package    theme_ctel
+ * @copyright  2016 Frédéric Massart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$version  = 2017111302.08;              // 20171113      = branching date YYYYMMDD - do not modify!
-
-$release  = '3.4.2+ (Build: 20180425)'; // Human-friendly version name
-
-$branch   = '34';                       // This version's branch.
-$maturity = MATURITY_STABLE;             // This version's maturity level.
+$plugin->version   = 2017111300;
+$plugin->requires  = 2017110800;
+$plugin->component = 'theme_ctel';

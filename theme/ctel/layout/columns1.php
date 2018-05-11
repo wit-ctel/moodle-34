@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,22 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * MOODLE VERSION INFORMATION
+ * A one column layout for the ctel theme.
  *
- * This file defines the current version of the core Moodle code being used.
- * This is compared against the values stored in the database to determine
- * whether upgrades should be performed (see lib/db/*.php)
- *
- * @package    core
- * @copyright  1999 onwards Martin Dougiamas (http://dougiamas.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   theme_ctel
+ * @copyright 2016 Damyon Wiese
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$version  = 2017111302.08;              // 20171113      = branching date YYYYMMDD - do not modify!
+$bodyattributes = $OUTPUT->body_attributes([]);
 
-$release  = '3.4.2+ (Build: 20180425)'; // Human-friendly version name
+$templatecontext = [
+    'sitename' => format_string($SITE->shortname, true, ['context' => context_course::instance(SITEID), "escape" => false]),
+    'output' => $OUTPUT,
+    'bodyattributes' => $bodyattributes
+];
 
-$branch   = '34';                       // This version's branch.
-$maturity = MATURITY_STABLE;             // This version's maturity level.
+echo $OUTPUT->render_from_template('theme_ctel/columns1', $templatecontext);
+
