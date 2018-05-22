@@ -67,22 +67,74 @@ class content_writer implements \core_privacy\local\request\content_writer {
     protected $customfiles;
 
     /**
-     * @var array The site-wide user preferences which have been exported.
+     * @var \stdClass The user preferences which have been exported.
      */
-    protected $userprefs = [];
+    protected $userprefs;
 
     /**
      * Whether any data has been exported at all within the current context.
+     *
+     * @param array $subcontext The location within the current context that this data belongs -
+     *   in this method it can be partial subcontext path (or none at all to check presence of any data anywhere).
+     *   User preferences never have subcontext, if $subcontext is specified, user preferences are not checked.
+     * @return  bool
      */
-    public function has_any_data() {
-        $hasdata = !empty($this->data->{$this->context->id});
-        $hasrelateddata = !empty($this->relateddata->{$this->context->id});
-        $hasmetadata = !empty($this->metadata->{$this->context->id});
-        $hasfiles = !empty($this->files->{$this->context->id});
-        $hascustomfiles = !empty($this->customfiles->{$this->context->id});
-        $hasuserprefs = !empty($this->userprefs);
+    public function has_any_data($subcontext = []) {
+        if (empty($subcontext)) {
+            // When subcontext is not specified check presence of user preferences in this context and in system context.
+            $hasuserprefs = !empty($this->userprefs->{$this->context->id});
+            $systemcontext = \context_system::instance();
+            $hasglobaluserprefs = !empty($this->userprefs->{$systemcontext->id});
+            if ($hasuserprefs || $hasglobaluserprefs) {
+                return true;
+            }
+        }
 
-        return $hasdata || $hasrelateddata || $hasmetadata || $hasfiles || $hascustomfiles || $hasuserprefs;
+        foreach (['data', 'relateddata', 'metadata', 'files', 'customfiles'] as $datatype) {
+            if (!property_exists($this->$datatype, $this->context->id)) {
+                // No data of this type for this context at all. Continue to the next data type.
+                continue;
+            }
+            $basepath = $this->$datatype->{$this->context->id};
+            foreach ($subcontext as $subpath) {
+                if (!isset($basepath->children->$subpath)) {
+                    // No data of this type is present for this path. Continue to the next data type.
+                    continue 2;
+                }
+                $basepath = $basepath->children->$subpath;
+            }
+            if (!empty($basepath)) {
+                // Some data found for this type for this subcontext.
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Whether any data has been exported for any context.
+     *
+     * @return  bool
+     */
+    public function has_any_data_in_any_context() {
+        $checkfordata = function($location) {
+            foreach ($location as $context => $data) {
+                if (!empty($data)) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+
+        $hasanydata = $checkfordata($this->data);
+        $hasanydata = $hasanydata || $checkfordata($this->relateddata);
+        $hasanydata = $hasanydata || $checkfordata($this->metadata);
+        $hasanydata = $hasanydata || $checkfordata($this->files);
+        $hasanydata = $hasanydata || $checkfordata($this->customfiles);
+        $hasanydata = $hasanydata || $checkfordata($this->userprefs);
+
+        return $hasanydata;
     }
 
     /**
@@ -97,6 +149,7 @@ class content_writer implements \core_privacy\local\request\content_writer {
         $this->metadata = (object) [];
         $this->files = (object) [];
         $this->customfiles = (object) [];
+        $this->userprefs = (object) [];
     }
 
     /**
@@ -137,6 +190,13 @@ class content_writer implements \core_privacy\local\request\content_writer {
 
         if (isset($this->customfiles->{$this->context->id}) && empty((array) $this->customfiles->{$this->context->id})) {
             $this->customfiles->{$this->context->id} = (object) [
+                'children' => (object) [],
+                'data' => [],
+            ];
+        }
+
+        if (isset($this->userprefs->{$this->context->id}) && empty((array) $this->userprefs->{$this->context->id})) {
+            $this->userprefs->{$this->context->id} = (object) [
                 'children' => (object) [],
                 'data' => [],
             ];
@@ -312,6 +372,8 @@ class content_writer implements \core_privacy\local\request\content_writer {
      * actual writer exports files so it can be reliably tested only in real writers such as
      * {@link core_privacy\local\request\moodle_content_writer}.
      *
+     * However we have to remove @@PLUGINFILE@@ since otherwise {@link format_text()} shows debugging messages
+     *
      * @param   array           $subcontext The location within the current context that this data belongs.
      * @param   string          $component  The name of the component that the files belong to.
      * @param   string          $filearea   The filearea within that component.
@@ -320,7 +382,7 @@ class content_writer implements \core_privacy\local\request\content_writer {
      * @return  string                      The processed string
      */
     public function rewrite_pluginfile_urls(array $subcontext, $component, $filearea, $itemid, $text) : string {
-        return $text;
+        return str_replace('@@PLUGINFILE@@/', 'files/', $text);
     }
 
     /**
@@ -349,7 +411,10 @@ class content_writer implements \core_privacy\local\request\content_writer {
      */
     public function export_file(array $subcontext, \stored_file $file) : \core_privacy\local\request\content_writer  {
         if (!$file->is_directory()) {
-            $filepath = explode(DIRECTORY_SEPARATOR, $file->get_filepath());
+            $filepath = $file->get_filepath();
+            // Directory separator in the stored_file class should always be '/'. The following line is just a fail safe.
+            $filepath = str_replace(DIRECTORY_SEPARATOR, '/', $filepath);
+            $filepath = explode('/', $filepath);
             $filepath[] = $file->get_filename();
             $filepath = array_filter($filepath);
             $filepath = implode('/', $filepath);
@@ -386,11 +451,13 @@ class content_writer implements \core_privacy\local\request\content_writer {
         string $value,
         string $description
     ) : \core_privacy\local\request\content_writer {
-        if (!isset($this->userprefs[$component])) {
-            $this->userprefs[$component] = (object) [];
+        $prefs = $this->fetch_root($this->userprefs, []);
+
+        if (!isset($prefs->{$component})) {
+            $prefs->{$component} = (object) [];
         }
 
-        $this->userprefs[$component]->$key = (object) [
+        $prefs->{$component}->$key = (object) [
             'value' => $value,
             'description' => $description,
         ];
@@ -405,8 +472,25 @@ class content_writer implements \core_privacy\local\request\content_writer {
      * @return  \stdClass
      */
     public function get_user_preferences(string $component) {
-        if (isset($this->userprefs[$component])) {
-            return $this->userprefs[$component];
+        $context = \context_system::instance();
+        $prefs = $this->fetch_root($this->userprefs, [], $context->id);
+        if (isset($prefs->{$component})) {
+            return $prefs->{$component};
+        } else {
+            return (object) [];
+        }
+    }
+
+    /**
+     * Get all user preferences for the specified component.
+     *
+     * @param   string          $component  The name of the component.
+     * @return  \stdClass
+     */
+    public function get_user_context_preferences(string $component) {
+        $prefs = $this->fetch_root($this->userprefs, []);
+        if (isset($prefs->{$component})) {
+            return $prefs->{$component};
         } else {
             return (object) [];
         }
@@ -426,17 +510,19 @@ class content_writer implements \core_privacy\local\request\content_writer {
      *
      * @param   \stdClass   $base The base to use - e.g. $this->data
      * @param   array       $subcontext The subcontext to fetch
+     * @param   int         $temporarycontextid A temporary context ID to use for the fetch.
      * @return  array
      */
-    protected function fetch_root($base, $subcontext) {
-        if (!isset($base->{$this->context->id})) {
-            $base->{$this->context->id} = (object) [
+    protected function fetch_root($base, $subcontext, $temporarycontextid = null) {
+        $contextid = !empty($temporarycontextid) ? $temporarycontextid : $this->context->id;
+        if (!isset($base->{$contextid})) {
+            $base->{$contextid} = (object) [
                 'children' => (object) [],
                 'data' => [],
             ];
         }
 
-        $current = $base->{$this->context->id};
+        $current = $base->{$contextid};
         foreach ($subcontext as $node) {
             if (!isset($current->children->{$node})) {
                 $current->children->{$node} = (object) [

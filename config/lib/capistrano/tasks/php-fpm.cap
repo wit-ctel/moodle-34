@@ -1,8 +1,8 @@
 namespace :php_fpm do
-  desc "Reload PHP5-FPM (requires sudo access to /usr/sbin/service php5-fpm restart)"
+  desc "Reload php7.1-fpm"
   task :restart do
     on roles(:app) do
-      execute :sudo, :service, "php5-fpm restart"
+      execute :systemctl, "restart php7.1-fpm.service"
     end
   end
 end
