@@ -2,7 +2,7 @@ namespace :php_fpm do
   desc "Reload php7.1-fpm"
   task :restart do
     on roles(:app) do
-      execute :systemctl, "restart php7.1-fpm.service"
+      execute :sudo, :service, "php7.1-fpm restart"
     end
   end
 end
