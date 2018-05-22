@@ -6,6 +6,32 @@
     height: 16px;
 }
 
+#course-header{
+    float:left;
+}
+#course-header img{
+    height:70px;
+    padding-right:20px;
+}
+
+.section__navigation{
+    position:relative;
+}
+
+.section__footer .nav_guide{
+    font-size:1.25rem;
+}
+
+.section__footer .text{
+    font-size:1.5rem;
+}
+
+.section__navigation #sectionmenu{
+    position: absolute;
+    top: 0px;
+    right: 0px;
+}
+
 .section_add_menus {
     text-align: right;
     clear: both;
