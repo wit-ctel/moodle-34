@@ -65,3 +65,18 @@ body.drawer-open-right {
         margin-right: $drawer-width;
     }
 }
+
+
+// css for hiding menu items
+.list-group .Site{
+    display:none;
+}
+.list-group .Calendar{
+    display:none;
+}
+.list-group .Private{
+    display:none;
+}
+.list-group .administration{
+    display:block;
+}
