@@ -95,7 +95,7 @@ class core_renderer extends \core_renderer {
             $html .= html_writer::div($pageheadingbutton, 'breadcrumb-button pull-xs-right');
             $html .= html_writer::end_div();
         } else if ($pageheadingbutton) {
-            $html .= html_writer::div($pageheadingbutton, 'breadcrumb-button nonavbar pull-xs-right');
+            $html .= html_writer::div($pageheadingbutton, 'breadcrumb-button nonavbar pull-xs-right customise-this-page');
         }
         $html .= html_writer::end_div();
 
