@@ -70,9 +70,15 @@ class main implements renderable, templatable {
         }
 
         $courses = enrol_get_my_courses('*', $sort);
+        $infoareas = [];
         $coursesprogress = [];
 
-        foreach ($courses as $course) {
+        foreach ($courses as $key => $course) {
+
+            if (preg_match("/^SUPPORT|INFO|PROG_/", $course->idnumber)) {
+                $infoareas[$course->id] = $course; 
+                unset($courses[$key]); // remove support course from array
+            } 
 
             $completion = new \completion_info($course);
 
@@ -91,6 +97,7 @@ class main implements renderable, templatable {
         }
 
         $coursesview = new courses_view($courses, $coursesprogress);
+        $infoareasview = new infoareas_view($infoareas);
         $nocoursesurl = $output->image_url('courses', 'block_myoverview')->out();
         $noeventsurl = $output->image_url('activities', 'block_myoverview')->out();
 
@@ -106,6 +113,7 @@ class main implements renderable, templatable {
         return [
             'midnight' => usergetmidnight(time()),
             'coursesview' => $coursesview->export_for_template($output),
+            'infoareasview' => $infoareasview->export_for_template($output),
             'urls' => [
                 'nocourses' => $nocoursesurl,
                 'noevents' => $noeventsurl
