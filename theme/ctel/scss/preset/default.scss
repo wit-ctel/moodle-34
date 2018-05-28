@@ -160,10 +160,11 @@ $breadcrumb-divider-rtl: "/" !default;
 .block-region .card-block {
     .card-title {
         padding-bottom: ($spacer/2);
-        font-size: 1.143rem;
+        font-size: 1.1rem;
         font-weight: 600;
-        text-transform: uppercase;
+        text-transform: capitalise;
     }
+    color:#555;
 }
 
 /**

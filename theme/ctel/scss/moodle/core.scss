@@ -27,6 +27,19 @@ $bg-inverse-link-color: #fff !default;
     font-size: 24px;
     width: auto;
 }
+
+//styles to position customise this page to top right of context container
+
+.context_container{
+    position:relative;
+}
+
+.customise-this-page{
+    position: absolute;
+    right: 10px;
+    top: 0px;
+}
+
 /** Prevent user notifications overlapping with region main settings menu */
 #user-notifications {
     display: block;
