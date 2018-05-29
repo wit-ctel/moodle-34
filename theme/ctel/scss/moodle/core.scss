@@ -30,14 +30,15 @@ $bg-inverse-link-color: #fff !default;
 
 //styles to position customise this page to top right of context container
 
-.context_container{
-    position:relative;
+.customise-this-page {
+    position: absolute;
+    right: 15px;
+    top: 15px;
 }
 
-.customise-this-page{
-    position: absolute;
-    right: 10px;
-    top: 0px;
+.page-context-header {
+    overflow: hidden;
+    margin-right: 30x;
 }
 
 /** Prevent user notifications overlapping with region main settings menu */
