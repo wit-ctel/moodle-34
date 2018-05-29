@@ -131,10 +131,7 @@ class format_simple_renderer extends format_section_renderer_base {
         if (course_get_format($course)->is_section_current($thissection)) {
             $sectiontitle .= html_writer::tag('span', get_string('currenttopic', 'format_simple'), array('class' => 'label label-info'));    
         }
-        
-        $sectiontitle .= html_writer::tag('div', $this->section_nav_selection($course, $sections, $displaysection),
-              array('class' => 'pull-right'));
-      
+
         $sectiontitle .= html_writer::end_tag('header');
         echo $sectiontitle;
 
