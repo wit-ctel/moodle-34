@@ -66,6 +66,15 @@ body.drawer-open-right {
     }
 }
 
+// custom style to indicate nav items marked as hidden
+.list-group-item-hidden, .list-group-item-hidden:hover {
+    color: $gray-light;
+    text-decoration: line-through;
+
+    .icon {
+      color: $gray-light;
+    }
+}
 
 // css for hiding menu items
 .list-group .Site{
