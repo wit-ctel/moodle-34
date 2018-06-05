@@ -66,9 +66,7 @@ class infoareas_view implements renderable, templatable {
 
             // Include course visibility.
             $exportedcourse->visible = (bool)$course->visible;
-
-            $classified = course_classify_for_timeline($course);
-
+            
             // Courses that have already ended.
             $inprogresspages = floor($coursesbystatus['inprogress'] / $this::COURSES_PER_PAGE);
 
