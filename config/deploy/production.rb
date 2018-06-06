@@ -1,3 +1,4 @@
+
 set :stage, :production
 set :deploy_to, "/var/www/moodle.wit.ie/"
 set :branch, ENV["BRANCH_NAME"] || "master"
