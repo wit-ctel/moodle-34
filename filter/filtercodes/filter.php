@@ -396,6 +396,11 @@ class filter_filtercodes extends moodle_text_filter {
                     $replace['/\{coursecompletiondate\}/i'] = get_string('completionnotenabled', 'completion');
                 }
             }
+            
+            // Tag: {courseurl}. The url of this course.
+            if (stripos($text, '{courseurl}') !== false) {
+                $replace['/\{courseurl\}/i'] = (string) new moodle_url('/course/view.php', array('id' => $PAGE->course->id));
+            }
         }
 
         // Tag: {mycourses} and {mycoursesmenu}.
